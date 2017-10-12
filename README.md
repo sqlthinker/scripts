@@ -1,7 +1,7 @@
 # Scripts
 In this repository you will find a collection of scripts that hopefully you can use in your projects
 
-## gcp
+## [gcp](./gcp)
 Scripts specific to Google Cloud Platform (GCP)
 
 ### powershell
