@@ -4,6 +4,6 @@ In this repository you will find a collection of scripts that hopefully you can 
 ## [gcp](./gcp)
 Scripts specific to Google Cloud Platform (GCP)
 
-### powershell
-Collection of PowerShell scripts:
-* **sql-ag-alias-ip** - Scripts to create a SQL Server Availability Group usinG Alias IP Ranges
+### [powershell](./gcp/powershell)
+PowerShell scripts to be used in GCP:
+* **[sql-ag-alias-ip](./gcp/powershell/sql-ag-alias-ip)** - Scripts to create a SQL Server Availability Group usinG Alias IP Ranges
