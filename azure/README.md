@@ -1,5 +1,5 @@
 # Azure
-Scripts specific to Azuure
+Scripts specific to Azure
 
 ### [powershell](./powershell)
 PowerShell scripts to be used in Azure:
