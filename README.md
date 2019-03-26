@@ -7,3 +7,6 @@ In this repository you will find a collection of scripts that hopefully you can 
 
 ## [azure](./azure)
 * Scripts for Microsoft Azure
+
+## [db2](./db2)
+* Scripts for IBM DB2
