@@ -110,7 +110,7 @@ if ( $force_delete -eq $true ) {
 ################################################################################
 # Create a boot disk based on the image family that we want to create
 ################################################################################
-$image_disk = Get-GceImage $image_project -Family $image_family
+$image_disk = Get-GceImage -Family $image_family
 
 Write-Host "$(Get-Date) Creating boot disk for instance $node1"
 $boot_disk1 = New-GceDisk -DiskName $node1 -DiskType $disk_type -Image $image_disk `
@@ -157,33 +157,33 @@ $creation_status = Get-GceInstance -zone $zone -Name $node1 -SerialPortOutput |
     Select-String -Pattern 'Instance setup finished' -Quiet
 $n = 20
 while (!($creation_status)) {
-  Write-Host "$(Get-Date) Waiting for instance $node1 to be created"
-  Start-Sleep -s 15
+  Write-Host "$(Get-Date) Waiting for instance $node1 to be ready"
+  Start-Sleep -s 30
   $n -= 1
   if ($n -eq 0) {break}
 
   $creation_status = Get-GceInstance -zone $zone -Name $node1 -SerialPortOutput |
       Select-String -Pattern 'Instance setup finished' -Quiet
 }
-Write-Host "$(Get-Date) Instance $node1 is now created"
+Write-Host "$(Get-Date) Instance $node1 is now ready"
 
 $creation_status = Get-GceInstance -zone $zone -Name $node2 -SerialPortOutput | 
     Select-String -Pattern 'Instance setup finished' -Quiet
 $n = 20
 while (!($creation_status)) {
-  Write-Host "$(Get-Date) Waiting for instance $node2 to be created"
-  Start-Sleep -s 15
+  Write-Host "$(Get-Date) Waiting for instance $node2 to be ready"
+  Start-Sleep -s 30
   $n -= 1
-  if ($n -eq 0) {break} 
+  if ($n -eq 0) {break}
 
   $creation_status = Get-GceInstance -zone $zone -Name $node2 -SerialPortOutput | 
       Select-String -Pattern 'Instance setup finished' -Quiet
 }
-Write-Host "$(Get-Date) Instance $node2 is now created"
+Write-Host "$(Get-Date) Instance $node2 is now ready"
 
 
 # Wait a minute before trying to connect to make server is ready for connections
-Start-Sleep -s 60
+Start-Sleep -s 120
 
 
 ################################################################################
@@ -359,7 +359,7 @@ $creation_status = Get-GceInstance -zone $zone -Name $node1 -SerialPortOutput |
 $n = 20
 while (!($creation_status)) {
   Write-Host "$(Get-Date) Waiting for instance $node1 to restart"
-  Start-Sleep -s 15
+  Start-Sleep -s 30
   $n -= 1
   if ($n -eq 0) {break}
 
@@ -372,7 +372,7 @@ $creation_status = Get-GceInstance -zone $zone -Name $node2 -SerialPortOutput |
 $n = 20
 while (!($creation_status)) {
   Write-Host "$(Get-Date) Waiting for instance $node2 to restart"
-  Start-Sleep -s 15
+  Start-Sleep -s 30
   $n -= 1
   if ($n -eq 0) {break}
 
@@ -381,7 +381,7 @@ while (!($creation_status)) {
 }
 
 # Wait a minute to make sure all services have started
-Start-Sleep -s 60
+Start-Sleep -s 120
 
 Write-Host "$(Get-Date) Ready now to create a Windows Failover Cluster (WSFC)"
 Write-Host "                    $node1 - $ip_address1"
@@ -439,7 +439,7 @@ Invoke-Command -Session $session1 -ScriptBlock {
   $n = 40
 
   while ($status) {
-    Write-Host "$(Get-Date) Waiting for Availability Group to be created"
+    Write-Host "$(Get-Date) $hostname - Waiting for Availability Group to be ready"
     Start-Sleep -s 30
     $n -= 1
     if ($n -eq 0) {break}
@@ -462,18 +462,18 @@ Invoke-Command -Session $session1 -ScriptBlock {
 
 
 # Verify that the AG was created
-Invoke-Command -Session $session1 -ScriptBlock {
-  param($node1, $name_ag)
+#Invoke-Command -Session $session1 -ScriptBlock {
+#  param($node1, $name_ag)
 
   # Verify if the AG exists
-  Import-Module SQLPS -DisableNameChecking
-  if (Test-Path -Path "SQLSERVER:\SQL\$($node1)\DEFAULT\AvailabilityGroups\$($name_ag)")  {
-    Write-Host "$(Get-Date) Verified that the Availability Group exists"
-  } else {
-    Throw "Unable to verify that the Availability Group exists"
-  }
+#  Import-Module SQLPS -DisableNameChecking
+#  if (Test-Path -Path "SQLSERVER:\SQL\$($node1)\DEFAULT\AvailabilityGroups\$($name_ag)")  {
+#    Write-Host "$(Get-Date) Verified that the Availability Group exists"
+#  } else {
+#    Throw "Unable to verify that the Availability Group exists"
+#  }
 
-} -ArgumentList $node1, $name_ag
+#} -ArgumentList $node1, $name_ag
 
 
 # Close the remote sessions
@@ -481,5 +481,8 @@ Remove-PSSession $session1
 Remove-Variable session1
 Remove-PSSession $session2
 Remove-Variable session2
+
+Write-Host "$(Get-Date) End of create-sql-instance-availability-group.ps1"
+
 
 # Get-PSSession

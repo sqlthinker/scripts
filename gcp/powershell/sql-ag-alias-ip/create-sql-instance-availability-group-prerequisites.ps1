@@ -85,11 +85,13 @@ else {
 # Create the custom network with 3 subnetworks
 ################################################################################
 Write-Host "$(Get-Date) Create custom network with 3 subnetworks"
-$ErrorActionPreference = 'continue' #To skip non-error reported by PowerShell
+#$ErrorActionPreference = 'continue' #To skip non-error reported by PowerShell
 Invoke-Command -ScriptBlock {
 
   if ( !( Get-GceNetwork | Where Name -eq $network ) ) {
-    gcloud compute networks create $network --mode custom
+    gcloud compute networks create $network --subnet-mode custom
+    # Remove-GceNetwork -Name $network
+    # New-GceNetwork -Name $network -IPv4Range 10.0.0.0/22
   } else {
     Write-Host "  The network: $network already exist"
   }
@@ -239,13 +241,13 @@ if ( !( Get-GceInstance | Where {$_.Name -eq $domain_cntr} ) ) {
     Select-String -Pattern 'Instance setup finished' -Quiet
 
   while (!($creation_status)) {
-    Write-Host "$(Get-Date) Waiting for instance $domain_cntr to be created"
-    Start-Sleep -s 15
+    Write-Host "$(Get-Date) Waiting for instance $domain_cntr to be ready"
+    Start-Sleep -s 30
     $creation_status = Get-GceInstance -zone $zone_domain_cntr -Name $domain_cntr -SerialPortOutput |
       Select-String -Pattern 'Instance setup finished' -Quiet
   }
 
-  Write-Host "$(Get-Date) Instance $domain_cntr is now created"
+  Write-Host "$(Get-Date) Instance $domain_cntr is now ready"
 
 
   ################################################################################
@@ -345,7 +347,7 @@ if ( !( Get-GceInstance | Where {$_.Name -eq $domain_cntr} ) ) {
     Select-String -Pattern 'Starting shutdown scripts' -Quiet
   while (!($creation_status)) {
     Write-Host "$(Get-Date) Waiting for instance $domain_cntr to restart"
-    Start-Sleep -s 15
+    Start-Sleep -s 30
 
     $creation_status = Get-GceInstance -zone $zone_domain_cntr -Name $domain_cntr -SerialPortOutput | 
       Select-String -Pattern 'Starting shutdown scripts' -Quiet

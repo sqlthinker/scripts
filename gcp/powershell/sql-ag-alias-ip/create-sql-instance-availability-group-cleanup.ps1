@@ -37,7 +37,7 @@
 ##### Cleanup - Run with caution as everything will be deleted #####
 # All the commands are commented to make sure they don't run automatically
 
-<#
+#<#
 $ErrorActionPreference = 'continue'
 
 # Delete instances

@@ -304,11 +304,26 @@ if ( !($AG) ) {
     -Path "SQLSERVER:\SQL\$($node2)\DEFAULT" `
     -Name $name_ag
 
+
   # Join the secondary database to the availability group.
   Write-Host "$(Get-Date) $hostname - Join DB in $node2 to Availability Group"
-  Add-SqlAvailabilityDatabase `
-    -Path "SQLSERVER:\SQL\$($node2)\DEFAULT\AvailabilityGroups\$($name_ag)" `
-    -Database $db_name
+  #Add-SqlAvailabilityDatabase `
+  #  -Path "SQLSERVER:\SQL\$($node2)\DEFAULT\AvailabilityGroups\$($name_ag)" `
+  #  -Database $db_name
+
+  # In SQL Server 2017 the Add-SqlAvailabilityDatabase was failing so decided to run it as a query instead
+  Invoke-Command -ComputerName $node2 -ScriptBlock { 
+    param($db_name, $name_ag)
+  
+    $hostname = [System.Net.Dns]::GetHostName()
+    Write-Host "$(Get-Date) $hostname - Adding database [$db_name] to Availability Group [$name_ag]"
+  
+    $query = "ALTER DATABASE [$db_name] SET HADR AVAILABILITY GROUP = [$name_ag]"
+    Write-Host $query
+  
+    Invoke-Sqlcmd -Query $query
+  } -ArgumentList $db_name, $name_ag
+
 
   # Create the listener
   Write-Host "$(Get-Date) $hostname - Create Listener ($ip_ag_listener1, $ip_ag_listener2)"
@@ -323,7 +338,7 @@ else {
   Write-Host "$(Get-Date) This node already member of the Availability Group"
 }
 
-Write-Host "$(Get-Date) SQL Server Availability Group $name_ag is now created"
+Write-Host "$(Get-Date) SQL Server Availability Group $name_ag is now ready"
 
 
 ################################################################################

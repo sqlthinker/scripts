@@ -82,55 +82,67 @@ $log_size       = 1024                   # Initial size of the transaction log i
 $log_growth     = 256                    # Auto growth size of the transaction log in MB
 
 
-# Image Project for SQL Server images (windows-sql-cloud)
-# If you are installing SQL Server by yourself, then choose a project with just Windows Server (windows-cloud)
-$image_project = `
-   'windows-sql-cloud'
-  # 'windows-cloud'
-
 # Image Family for the instance. Uncomment only one of the variables below
-# Check the command: gcloud compute images list --filter="PROJECT:windows-cloud" or gcloud compute images list --filter="PROJECT:windows-sql-cloud"
-$image_family = `
-  # 'sql-ent-2012-win-2012-r2'   # SQL Server 2012 Enterprise Edition on Windows Server 2012 R2
-  # 'sql-std-2012-win-2012-r2'   # SQL Server 2012 Standard Edition on Windows Server 2012 R2
-  # 'sql-web-2012-win-2012-r2'   # SQL Server 2012 Web Edition on Windows Server 2012 R2
-  # 'sql-ent-2014-win-2012-r2'   # SQL Server 2014 Enterprise Edition on Windows Server 2012 R2
-  # 'sql-std-2014-win-2012-r2'   # SQL Server 2014 Standard Edition on Windows Server 2012 R2
-  # 'sql-web-2014-win-2012-r2'   # SQL Server 2014 Web Edition on Windows Server 2012 R2
-  # 'sql-ent-2016-win-2012-r2'   # SQL Server 2016 Enterprise Edition on Windows Server 2012 R2
-   'sql-ent-2016-win-2016'      # SQL Server 2016 Enterprise Edition on Windows Server 2016 
-  # 'sql-exp-2016-win-2012-r2'   # SQL Server 2016 Express Edition on Windows Server 2012 R2
-  # 'sql-exp-2016-win-2016'      # SQL Server 2016 Express Edition on Windows Server 2016
-  # 'sql-std-2016-win-2012-r2'   # SQL Server 2016 Standard Edition on Windows Server 2012 R2
-  # 'sql-std-2016-win-2016'      # SQL Server 2016 Standard Edition on Windows Server 2016
-  # 'sql-web-2016-win-2012-r2'   # SQL Server 2016 Web Edition on Windows Server 2012 R2
-  # 'sql-web-2016-win-2016'      # SQL Server 2016 Web Edition on Windows Server 2016
-  # 'windows-2012-r2'            # Windows Server 2012 R2 (without SQL Server)
-  # 'windows-2016'               # Windows Server 2016 (without SQL Server) 
+# Check the command: gcloud compute images list --format='table(family)' | findstr sql
+$image_family = 'sql-std-2017-win-2019'
+  # 'sql-ent-2012-win-2012-r2'
+  # 'sql-std-2012-win-2012-r2'
+  # 'sql-web-2012-win-2012-r2'
+  # 'sql-ent-2014-win-2012-r2'
+  # 'sql-ent-2014-win-2016'
+  # 'sql-std-2014-win-2012-r2'
+  # 'sql-web-2014-win-2012-r2'
+  # 'sql-ent-2016-win-2012-r2'
+  # 'sql-ent-2016-win-2016'
+  # 'sql-ent-2016-win-2019'
+  # 'sql-std-2016-win-2012-r2'
+  # 'sql-std-2016-win-2016'
+  # 'sql-std-2016-win-2019'
+  # 'sql-web-2016-win-2012-r2'
+  # 'sql-web-2016-win-2016'
+  # 'sql-web-2016-win-2019'
+  # 'sql-ent-2017-win-2016'
+  # 'sql-ent-2017-win-2019'
+  # 'sql-exp-2017-win-2012-r2'
+  # 'sql-exp-2017-win-2016'
+  # 'sql-exp-2017-win-2019'
+  # 'sql-std-2017-win-2016'
+  # 'sql-std-2017-win-2019'
+  # 'sql-web-2017-win-2016'
+  # 'sql-web-2017-win-2019'
 
 
 # Machine Type. Uncomment only one of the variables below.
-# Check the command: gcloud compute machine-types list --filter="ZONE:us-central1-f"
-$machine_type = `
-  # 'f1-micro'        # 1 vCPU, 0.6 GB RAM
-  # 'g1-small'        # 1 vCPU, 1.7 GB RAM
-  # 'n1-highcpu-2'    # 2 vCPUs, 1.8 GB RAM
-  # 'n1-highcpu-4'    # 4 vCPUs, 3.6 GB RAM
-  # 'n1-highcpu-8'    # 8 vCPUs, 7.2 GB RAM
-  # 'n1-highcpu-16'   # 16 vCPUs, 14.4 GB RAM
-  # 'n1-highmem-2'    # 2 vCPUs, 13 GB RAM
-  'n1-highmem-4'    # 4 vCPUs, 26 GB RAM
-  # 'n1-highmem-8'    # 8 vCPUs, 52 GB RAM
-  # 'n1-highmem-16'   # 16 vCPUs, 104 GB RAM
-  # 'n1-standard-1'   # 1 vCPU, 3.75 GB RAM
-  # 'n1-standard-2'   # 2 vCPUs, 7.5 GB RAM
-  # 'n1-standard-4'   # 4 vCPUs, 15 GB RAM
-  # 'n1-standard-8'   # 8 vCPUs, 30 GB RAM
-  # 'n1-standard-16'  # 16 vCPUs, 60 GB RAM
+# Check the command: gcloud compute machine-types list --filter="ZONE:us-central1-f" --format='table(name, description)'
+$machine_type = 'n1-standard-4'
+  # 'f1-micro'       # 1 vCPU (shared physical core) and 0.6 GB RAM
+  # 'g1-small'       # 1 vCPU (shared physical core) and 1.7 GB RAM
+  # 'n1-highcpu-16'  # 16 vCPUs, 14.4 GB RAM
+  # 'n1-highcpu-2'   # 2 vCPUs, 1.8 GB RAM
+  # 'n1-highcpu-32'  # 32 vCPUs, 28.8 GB RAM
+  # 'n1-highcpu-4'   # 4 vCPUs, 3.6 GB RAM
+  # 'n1-highcpu-64'  # 64 vCPUs, 57.6 GB RAM
+  # 'n1-highcpu-8'   # 8 vCPUs, 7.2 GB RAM
+  # 'n1-highcpu-96'  # 96 vCPUs, 86 GB RAM
+  # 'n1-highmem-16'  # 16 vCPUs, 104 GB RAM
+  # 'n1-highmem-2'   # 2 vCPUs, 13 GB RAM
+  # 'n1-highmem-32'  # 32 vCPUs, 208 GB RAM
+  # 'n1-highmem-4'   # 4 vCPUs, 26 GB RAM
+  # 'n1-highmem-64'  # 64 vCPUs, 416 GB RAM
+  # 'n1-highmem-8'   # 8 vCPUs, 52 GB RAM
+  # 'n1-highmem-96'  # 96 vCPUs, 624 GB RAM
+  # 'n1-standard-1'  # 1 vCPU, 3.75 GB RAM
+  # 'n1-standard-16' # 16 vCPUs, 60 GB RAM
+  # 'n1-standard-2'  # 2 vCPUs, 7.5 GB RAM
+  # 'n1-standard-32' # 32 vCPUs, 120 GB RAM
+  # 'n1-standard-4'  # 4 vCPUs, 15 GB RAM
+  # 'n1-standard-64' # 64 vCPUs, 240 GB RAM
+  # 'n1-standard-8'  # 8 vCPUs, 30 GB RAM
+  # 'n1-standard-96' # 96 vCPUs, 360 GB RAM
 
 # Zone where the instance will be located. Uncomment only one of the variables below.
-# Check the command: gcloud compute zones list
-$zone = `
+# Check the command: gcloud compute zones list --format='table(name)'
+$zone = 'us-east1-b'
   # 'asia-east1-a'
   # 'asia-east1-b'
   # 'asia-east1-c'
@@ -141,7 +153,7 @@ $zone = `
   # 'us-central1-b'
   # 'us-central1-c'
   # 'us-central1-f'
-   'us-east1-b'
+  # 'us-east1-b'
   # 'us-east1-c'
   # 'us-east1-d'
   # 'us-west1-a'
