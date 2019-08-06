@@ -44,16 +44,14 @@ $subnet1_name = 'wsfcsubnet1'  # Name of Subnet 1. Node 1 will reside here.
 $subnet2_name = 'wsfcsubnet2'  # Name of Subnet 2. Node 2 will reside here.
 $subnet3_name = 'wsfcsubnet3'  # Name of Subnet 3. The domain controller will reside here but it can also be one of the other 2 subnets.
 
-# Because we plan to use "Alias IP ranges" we create the subnets with /16 and the two nodes will have /24 for their IP ranges.
-# The /24 will assign each node 254 extra IPs, but we only need 2: one for the WSFC cluster and another for the AG listener
-# Once "Alias IP ranges" support multiple /32 IP addresses we can stop using /24 and just use two /32 IP aliases.
-$subnet1 = "10.0.0.0/16" # Subnet1 netmask
-$subnet2 = "10.1.0.0/16" # Subnet2 netmask
-$subnet3 = "10.2.0.0/16" # Subnet3 netmask (FYI: We are not doing Alias IP for the domain controller so /16 is not absolutely necessary)
+# Create 3 subnets. One for each node and the third one for the domain controller. Change as appropiate to match your network requirements.
+$subnet1 = "10.0.0.0/24" # Subnet1 netmask
+$subnet2 = "10.1.0.0/24" # Subnet2 netmask
+$subnet3 = "10.2.0.0/24" # Subnet3 netmask
 
 $region1 = "us-east1"    # Subnet1 region
 $region2 = "us-east1"    # Subnet2 region
-$region3 = "us-east4"    # Subnet3 region (When using a free trial account we use a different region to work around the 8 CPU limit per region)
+$region3 = "us-east4"    # Subnet3 region
 
 
 # AD Domain configuration
@@ -85,7 +83,7 @@ else {
 # Create the custom network with 3 subnetworks
 ################################################################################
 Write-Host "$(Get-Date) Create custom network with 3 subnetworks"
-#$ErrorActionPreference = 'continue' #To skip non-error reported by PowerShell
+$ErrorActionPreference = 'continue' #To skip non-error reported by PowerShell
 Invoke-Command -ScriptBlock {
 
   if ( !( Get-GceNetwork | Where Name -eq $network ) ) {

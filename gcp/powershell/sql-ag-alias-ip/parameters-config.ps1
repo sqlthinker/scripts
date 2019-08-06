@@ -47,15 +47,13 @@ $disk_type      = 'pd-standard'          # Type of disk: pd-ssd (recommended) or
 # Windows Cluster parameters
 $name_wsfc       = 'cluster-dbclus'      # Name for the Windows Failover Cluster (WSFC)
 
-$ip_node1        = '10.0.0.2'            # IP address of node 1 in Subnet 1
-$ip_alias1       = '10.0.1.0/24'         # Alias IP range to assign to Node 1. Has to be a sub-range within $subnet1_name and must be /24.
-$ip_wsfc1        = '10.0.1.1'            # IP address of WSFC in Subnet 1        (choose from $ip_alias1 address range)
-$ip_ag_listener1 = '10.0.1.2'            # IP address of AG listener in Subnet 1 (choose from $ip_alias1 address range)
+$ip_node1        = '10.0.0.4'            # IP address of node 1 in Subnet 1
+$ip_wsfc1        = '10.0.0.5'            # IP address of WSFC in Subnet 1        (choose from $ip_alias1 address range)
+$ip_ag_listener1 = '10.0.0.6'            # IP address of AG listener in Subnet 1 (choose from $ip_alias1 address range)
 
-$ip_node2        = '10.1.0.2'            # IP address of node 2 in Subnet 2
-$ip_alias2       = '10.1.1.0/24'         # Alias IP range to assign to Node 2. Has to be a sub-range within $subnet2_name and must be /24.
-$ip_wsfc2        = '10.1.1.1'            # IP address of WSFC in Subnet 2        (choose from $ip_alias2 address range)
-$ip_ag_listener2 = '10.1.1.2'            # IP address of AG listener in Subnet 2 (choose from $ip_alias2 address range)
+$ip_node2        = '10.1.0.4'            # IP address of node 2 in Subnet 2
+$ip_wsfc2        = '10.1.0.5'            # IP address of WSFC in Subnet 2        (choose from $ip_alias2 address range)
+$ip_ag_listener2 = '10.1.0.6'            # IP address of AG listener in Subnet 2 (choose from $ip_alias2 address range)
 
 $name_ag         = 'cluster-ag'          # Name of the SQL Server Availability Group
 $name_ag_listener= 'ag-listener'         # Name of the SQL Server Availability Group Listener (15 characters maximum)

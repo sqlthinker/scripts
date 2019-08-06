@@ -134,7 +134,7 @@ Invoke-Command -ScriptBlock {
       --zone $zone `
       --can-ip-forward `
       --disk="name=$node1,boot=yes,auto-delete=yes" `
-      --network-interface subnet=$subnet1_name,aliases=$ip_alias1,private-network-ip=$ip_node1 --quiet 2> $null
+      --network-interface subnet=$subnet1_name,private-network-ip=$ip_node1,aliases="$ip_wsfc1;$ip_ag_listener1" --quiet 2> $null
 }
 
 Write-Host "$(Get-Date) Creating instance $node2"
@@ -143,7 +143,7 @@ Invoke-Command -ScriptBlock {
       --zone $zone `
       --can-ip-forward `
       --disk="name=$node2,boot=yes,auto-delete=yes" `
-      --network-interface subnet=$subnet2_name,aliases=$ip_alias2,private-network-ip=$ip_node2 --quiet 2> $null
+      --network-interface subnet=$subnet2_name,private-network-ip=$ip_node2,aliases="$ip_wsfc2;$ip_ag_listener2" --quiet 2> $null
 }
 $ErrorActionPreference = 'stop'
 
@@ -182,7 +182,7 @@ while (!($creation_status)) {
 Write-Host "$(Get-Date) Instance $node2 is now ready"
 
 
-# Wait a minute before trying to connect to make server is ready for connections
+# Wait 2 minutes before trying to connect to make sure the server is ready for connections
 Start-Sleep -s 120
 
 
@@ -461,7 +461,8 @@ Invoke-Command -Session $session1 -ScriptBlock {
 } -ArgumentList $cred
 
 
-# Verify that the AG was created
+# Verify that the AG was created. This only works if ran from a local node.
+# Left commented as an example for reference
 #Invoke-Command -Session $session1 -ScriptBlock {
 #  param($node1, $name_ag)
 

@@ -65,25 +65,7 @@ Describe "Availability-Group-Created" {
     $session_options = New-PSSessionOption -SkipCACheck -SkipCNCheck `
       -SkipRevocationCheck
 
-    # Run the Cmdlet to test the Availability Group
-    $results = Invoke-Command -ComputerName $ip_address1 -UseSSL `
-      -Credential $cred -SessionOption $session_options `
-      -ScriptBlock {
-      
-      param($node1, $name_ag)
-
-      Import-Module SQLPS -DisableNameChecking
-
-      Test-SqlAvailabilityGroup `
-        -Path "SQLSERVER:\SQL\$($node1)\DEFAULT\AvailabilityGroups\$($name_ag)"
-    } -ArgumentList $node1, $name_ag
-
-
-    # TEST: Should have two nodes and they should be in a "Synchronized" state
-    [string]$results[0].HealthState | Should Match "Healthy"
-
-
-    # Use SMO instead of PowerShell Cmdlet to query the DatabaseReplicaStates
+    # Use SMO to query the DatabaseReplicaStates
     $results = Invoke-Command -ComputerName $ip_address1 -UseSSL `
       -Credential $cred -SessionOption $session_options `
       -ScriptBlock {
