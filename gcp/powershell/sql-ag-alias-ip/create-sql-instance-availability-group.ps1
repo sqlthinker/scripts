@@ -26,35 +26,32 @@
 # Alias IP Ranges to skip some of the steps.
 #
 # PREREQUISITES:
-# 1. Before running the script, create the two subnetworks:
-#    wsfcsubnet1, wsfcsubnet2
+# 1. Before running the script, create the three subnetworks:
+#    wsfcsubnet1, wsfcsubnet2, wsfcsubnet3 (Optional)
 # 2. A domain controller for a domain called "dbeng.com" must also exist.
-#    The IP for the domain controller is 10.2.0.100
+#    The IP for the domain controller is 10.2.0.100 and resides in wsfcsubnet3 (optional)
 #
 # Quick summary of the configuration:
-# + Custom network "wsfcnet" with two subnetworks: "wsfcsubnet1", "wsfcsubnet2"
-#   - wsfcsubnet1: 10.0.0.0/16  -  Hosts Min/Max (10.0.0.1 - 10.0.255.254)
-#   - wsfcsubnet1: 10.1.0.0/16  -  Hosts Min/Max (10.1.0.1 - 10.1.255.254)
+# + Custom network "wsfcnet" with three subnetworks: wsfcsubnet1, wsfcsubnet2, wsfcsubnet3
+#   - wsfcsubnet1: 10.0.0.0/24
+#   - wsfcsubnet1: 10.1.0.0/24
+#   - wsfcsubnet3: 10.2.0.0/24
 #
-# + Two Nodes (your IPs may be different)
-#   - cluster-sql1: 10.0.0.2 in wsfcsubnet1
-#     This node has an IP Alias range of 10.0.1.0/24 (10.0.1.1 - 10.0.1.254)
-#     This means the node has 254 extra IPs, but we only use 2 of those IPs,
-#     one for the WSFC and and another for the Listener (10.0.1.1, 10.0.1.2)
+# + Two Nodes
+#   - cluster-sql1: 10.0.0.4 in wsfcsubnet1
+#     This node has two extra IP Aliases (10.0.0.5, 10.0.0.6)
 #      
-#   - cluster-sql2: 10.1.0.2 in wsfcsubnet1
-#     This node has an IP Alias range of 10.1.1.0/24 (10.1.1.1 - 10.1.1.254)
-#     This means the node has 254 extra IPs, but we only use 2 of those IPs,
-#     one for the WSFC and and another for the Listener (10.1.1.1, 10.1.1.2)
+#   - cluster-sql2: 10.1.0.4 in wsfcsubnet1
+#     This node has two extra IP Aliases (10.1.0.5, 10.1.0.6)
 #
 # + Windows Server Failover Cluster (WSFC)
 #   - Name: cluster-dbclus
-#   - Two IPs, one in each subnet: 10.0.1.1, 10.1.1.1
+#   - Two IPs from the IP Aliases: 10.0.0.5, 10.1.0.5
 #
 # + Availability Group & Listener
 #   - Availability Group Name : cluster-ag
 #   - Listener Name           : ag-listener
-#   - Listener IPs, one in each subnet: 10.0.1.2, 10.1.1.2
+#   - Two IPs from the IP Aliases: 10.0.0.6, 10.1.0.6
 #
 #
 # You must have the 'Google Cloud SDK' which includes the Powershell 
