@@ -1,5 +1,5 @@
 #Requires -Version 5
-# Copyright(c) 2016 Google Inc.
+# Copyright(c) 2019 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
@@ -298,7 +298,7 @@ Invoke-Command -Session $session1 -ScriptBlock {
 
   $hostname = [System.Net.Dns]::GetHostName()
 
-  # Create directorie C:\Scripts
+  # Create directory C:\Scripts
   Write-Host "$(Get-Date) $hostname - Creating folder: C:\Scripts"
   if (!(Test-Path -Path "C:\Scripts" )) { New-item -ItemType Directory "C:\Scripts" | 
     Out-Null }
@@ -386,14 +386,27 @@ Write-Host "                    $node2 - $ip_address2"
 
 
 # Create a remote session to each server again
-Write-Host "$(Get-Date) Creating remote session to $node1 - $ip_address1"
-$session1 = New-PSSession -ComputerName $ip_address1 -UseSSL `
-  -Credential $credential1 -SessionOption $session_options
+# If we are running the script from a computer in the same domain, we need to specify the FQDN
+# Note: If run from a computer in a different domain you may still get an error
+#       In that case just run create-availability-group.ps1 manually from one of the nodes
+Write-Host "$(Get-Date) Create a remote session to each server again"
 
-Write-Host "$(Get-Date) Creating remote session to $node2 - $ip_address2"
-$session2 = New-PSSession -ComputerName $ip_address2 -UseSSL `
-  -Credential $credential2 -SessionOption $session_options
+if ( (gwmi win32_computersystem).Domain.ToLower() -eq $domain.ToLower() ) {
+  $fqdn1="$node1.$env:USERDNSDOMAIN".ToLower()
+  $fqdn2="$node2.$env:USERDNSDOMAIN".ToLower()
 
+  $session1 = New-PSSession -ComputerName $fqdn1 -UseSSL -SessionOption $session_options
+  $session2 = New-PSSession -ComputerName $fqdn2 -UseSSL -SessionOption $session_options
+}
+else {
+  Write-Host "$(Get-Date) Creating remote session to $node1 - $ip_address1"
+  $session1 = New-PSSession -ComputerName $ip_address1 -UseSSL `
+    -Credential $credential1 -SessionOption $session_options
+
+  Write-Host "$(Get-Date) Creating remote session to $node2 - $ip_address2"
+  $session2 = New-PSSession -ComputerName $ip_address2 -UseSSL `
+    -Credential $credential2 -SessionOption $session_options
+}
 
 ##################################################################################
 # Create a Windows Failover Cluster (WSFC) and Availability Group
