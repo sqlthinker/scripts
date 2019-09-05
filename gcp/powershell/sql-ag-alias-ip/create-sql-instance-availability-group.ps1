@@ -16,14 +16,12 @@
 ###############################################################################
 #.SYNOPSIS
 # Create two Windows instances and set up a SQL Server Availability Group
-# using Alias IP Ranges
+# using Alias IPs
 #
 #.DESCRIPTION
 # This script will automate the steps described on:
 # "Configuring SQL Server Availability Groups"
 # https://cloud.google.com/compute/docs/instances/sql-server/configure-availability
-# but it does not follow all the steps in the instructions. Instead it uses
-# Alias IP Ranges to skip some of the steps.
 #
 # PREREQUISITES:
 # 1. Before running the script, create the three subnetworks:
@@ -385,7 +383,7 @@ Write-Host "                    $node1 - $ip_address1"
 Write-Host "                    $node2 - $ip_address2"
 
 
-# Create a remote session to each server again
+# Create a remote session only to Node 1
 # If we are running the script from a computer in the same domain, we need to specify the FQDN
 # Note: If run from a computer in a different domain you may still get an error
 #       In that case just run create-availability-group.ps1 manually from one of the nodes
@@ -393,19 +391,19 @@ Write-Host "$(Get-Date) Create a remote session to each server again"
 
 if ( (gwmi win32_computersystem).Domain.ToLower() -eq $domain.ToLower() ) {
   $fqdn1="$node1.$env:USERDNSDOMAIN".ToLower()
-  $fqdn2="$node2.$env:USERDNSDOMAIN".ToLower()
+#  $fqdn2="$node2.$env:USERDNSDOMAIN".ToLower()
 
   $session1 = New-PSSession -ComputerName $fqdn1 -UseSSL -SessionOption $session_options
-  $session2 = New-PSSession -ComputerName $fqdn2 -UseSSL -SessionOption $session_options
+#  $session2 = New-PSSession -ComputerName $fqdn2 -UseSSL -SessionOption $session_options
 }
 else {
   Write-Host "$(Get-Date) Creating remote session to $node1 - $ip_address1"
   $session1 = New-PSSession -ComputerName $ip_address1 -UseSSL `
     -Credential $credential1 -SessionOption $session_options
 
-  Write-Host "$(Get-Date) Creating remote session to $node2 - $ip_address2"
-  $session2 = New-PSSession -ComputerName $ip_address2 -UseSSL `
-    -Credential $credential2 -SessionOption $session_options
+#  Write-Host "$(Get-Date) Creating remote session to $node2 - $ip_address2"
+#  $session2 = New-PSSession -ComputerName $ip_address2 -UseSSL `
+#    -Credential $credential2 -SessionOption $session_options
 }
 
 ##################################################################################
@@ -490,8 +488,8 @@ Invoke-Command -Session $session1 -ScriptBlock {
 # Close the remote sessions
 Remove-PSSession $session1
 Remove-Variable session1
-Remove-PSSession $session2
-Remove-Variable session2
+#Remove-PSSession $session2
+#Remove-Variable session2
 
 Write-Host "$(Get-Date) End of create-sql-instance-availability-group.ps1"
 

@@ -49,6 +49,26 @@ if (!($cred)) {
 
 
 ################################################################################
+# Create a file share witness
+################################################################################
+$session_option = New-CimSessionOption -ProxyAuthentication Kerberos -SkipCACheck -SkipCNCheck -UseSsl
+
+# Find the domain controller name
+$logonserver = $env:LOGONSERVER -replace "\\",""
+$dcsession = New-CimSession -ComputerName $logonserver -SessionOption $session_option
+
+# Create shared folder if it does not exist
+if (!( Get-SmbShare -CimSession $dcsession | Where-Object Name -eq "QWitness" )) {
+  New-SmbShare -Name "QWitness" -Path "C:\QWitness" -Description "SQL File Share Witness" -CimSession $dcsession -FullAccess "$domain\Administrator"
+}
+
+# Grant access to the shared folder to both nodes
+Grant-SmbShareAccess -Name "QWitness" -AccessRight Full -CimSession $dcsession -Force -AccountName "$node1`$","$node2`$"
+
+# Remove-SmbShare -Name "QWitness" -CimSession $dcsession -Force
+
+
+################################################################################
 # Create the test database in Node1
 ################################################################################
 Import-Module SQLPS -DisableNameChecking
@@ -365,3 +385,5 @@ Invoke-Command -ComputerName $node2 -ScriptBlock {
 # Use these commands to destroy the AG and WSFC if you are re-doing the creation again
 # Remove-SqlAvailabilityGroup -Path "SQLSERVER:\SQL\$($node1)\DEFAULT\AvailabilityGroups\$($name_ag)"
 # Remove-Cluster -Force -CleanupAD
+# Disable-SqlAlwaysOn -ServerInstance $node1 -Force
+# Disable-SqlAlwaysOn -ServerInstance $node2 -Force
