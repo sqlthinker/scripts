@@ -62,6 +62,7 @@ $name_ag_listener= 'ag-listener'         # Name of the SQL Server Availability G
 # Domain/user parameters
 $config_user     = 'Config.User'          # Local user to create in the instance. It will be used for the initial remote connection.
 $ip_domain_cntr  = '10.2.0.100'           # IP address of the Windows Domain controller. This will be used as the local DNS server.
+$domain_cntr     = 'dc-windows'           # Hostname of the domain controller. Will be used when creating a shared folder for Quorum.
 $domain          = 'dbeng.com'            # Name of the Windows Active Directory domain
 $domain_netbios  = 'dbeng'                # Name of the Windows Active Directory domain in Netbios (15 characters max)
 $domain_cred     = 'dbeng\Administrator'  # Account to use to add computers into the domain

@@ -37,14 +37,20 @@
 ##############################################################################
 
 $ErrorActionPreference = 'Stop'
-Set-Location $PSScriptRoot
+
+# If we are not able to figure out $PSScriptRoot, assume the scripts are in C:\Scripts
+if ($PSScriptRoot -eq "") {
+  $script_path = "C:\Scripts"
+} else {
+  $script_path = $PSScriptRoot
+}
 
 ################################################################################
 # Read the parameters for this script. They are found in the file 
 # parameters-config.ps1. We assume it is in the same folder as this script
 ################################################################################
 if (!($cred)) {
-  . ".\parameters-config.ps1"
+  . "$script_path\parameters-config.ps1"
 }
 
 
@@ -55,6 +61,11 @@ $session_option = New-CimSessionOption -ProxyAuthentication Kerberos -SkipCAChec
 
 # Find the domain controller name
 $logonserver = $env:LOGONSERVER -replace "\\",""
+
+# If unable to figure out the logon server, use the name of the domain controller.
+if ($logonserver -eq "") {
+  $logonserver = $domain_cntr
+}
 $dcsession = New-CimSession -ComputerName $logonserver -SessionOption $session_option
 
 # Create shared folder if it does not exist

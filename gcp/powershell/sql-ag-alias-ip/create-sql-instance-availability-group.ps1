@@ -75,7 +75,7 @@ Set-Location $PSScriptRoot
 # Read the parameters for this script. They are found in the file 
 # parameters-config.ps1. We assume it is in the same folder as this script
 ################################################################################
-. ".\parameters-config.ps1"
+. "$PSScriptRoot\parameters-config.ps1"
 
 
 ################################################################################
@@ -393,13 +393,14 @@ if ( (gwmi win32_computersystem).Domain.ToLower() -eq $domain.ToLower() ) {
   $fqdn1="$node1.$env:USERDNSDOMAIN".ToLower()
 #  $fqdn2="$node2.$env:USERDNSDOMAIN".ToLower()
 
+  Write-Host "$(Get-Date) Creating remote session to $fqdn1"
   $session1 = New-PSSession -ComputerName $fqdn1 -UseSSL -SessionOption $session_options
 #  $session2 = New-PSSession -ComputerName $fqdn2 -UseSSL -SessionOption $session_options
 }
 else {
   Write-Host "$(Get-Date) Creating remote session to $node1 - $ip_address1"
   $session1 = New-PSSession -ComputerName $ip_address1 -UseSSL `
-    -Credential $credential1 -SessionOption $session_options
+    -Credential $cred -SessionOption $session_options
 
 #  Write-Host "$(Get-Date) Creating remote session to $node2 - $ip_address2"
 #  $session2 = New-PSSession -ComputerName $ip_address2 -UseSSL `
@@ -427,7 +428,7 @@ Invoke-Command -Session $session1 -ScriptBlock {
   param($cred)
 
   $hostname = [System.Net.Dns]::GetHostName()
-  Write-Host "$(Get-Date) $hostname - Creating scheduled job to create Availability Group" -BackgroundColor Red -ForegroundColor Yellow
+  Write-Host "$(Get-Date) $hostname - Creating scheduled job to create Availability Group" -BackgroundColor Green -ForegroundColor Yellow
 
   # Delete job if it exists
   Get-ScheduledJob  | Where Name -eq 'Create-Availability-Group' | Unregister-ScheduledJob  -Confirm:$false
@@ -436,6 +437,10 @@ Invoke-Command -Session $session1 -ScriptBlock {
   Register-ScheduledJob -Name Create-Availability-Group `
     -ScriptBlock { C:\Scripts\create-availability-group.ps1 -Verbose *> 'C:\Scripts\create-availability-group.log' } `
     -Credential $Cred -RunNow
+
+#  Register-ScheduledJob -Name Create-Availability-Group `
+#    -FilePath "C:\Scripts\create-availability-group.ps1" `
+#    -Credential $Cred -RunNow -ArgumentList @{ Verbose=$true }
 
   # Wait 30 seconds before checking if the job is running
   Start-Sleep -s 30
@@ -460,12 +465,14 @@ Invoke-Command -Session $session1 -ScriptBlock {
   Write-Host "$(Get-Date) $hostname - Scheduled job to create Availability Group finished"
 
   # Display the contents of the log file created by the scheduled job
-  Write-Host "$(Get-Date) $hostname - Displaying the content of scheduled job log file" -BackgroundColor Red -ForegroundColor Yellow
+  Write-Host "$(Get-Date) $hostname - Displaying the content of scheduled job log file" -BackgroundColor Green -ForegroundColor Yellow
 
   Get-Content -Path 'C:\Scripts\create-availability-group.log'
 
-  Write-Host "$(Get-Date) $hostname - End of log file" -BackgroundColor Red -ForegroundColor Yellow
+  Write-Host "$(Get-Date) $hostname - End of log file" -BackgroundColor Green -ForegroundColor Yellow
 
+  # Delete job if it exists
+#  Get-ScheduledJob  | Where Name -eq 'Create-Availability-Group' | Unregister-ScheduledJob  -Confirm:$false
 } -ArgumentList $cred
 
 
