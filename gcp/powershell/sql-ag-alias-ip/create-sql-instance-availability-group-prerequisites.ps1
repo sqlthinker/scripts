@@ -73,7 +73,7 @@ $boot_disk_size_domain_cntr = "200GB"           # Size of the boot disk
 
 # Get the password for Domain Admin
 if (!($domain_pwd)) {
-  $domain_pwd = Read-Host -AsSecureString "Password for Domain Administrator" }
+  $admin_pwd = Read-Host -AsSecureString "Password for Domain Administrator" }
 else {
   $admin_pwd = ConvertTo-SecureString $domain_pwd -AsPlainText -Force
 }
