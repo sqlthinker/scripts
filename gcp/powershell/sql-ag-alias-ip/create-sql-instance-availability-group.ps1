@@ -434,8 +434,9 @@ Invoke-Command -Session $session1 -ScriptBlock {
   Get-ScheduledJob  | Where Name -eq 'Create-Availability-Group' | Unregister-ScheduledJob  -Confirm:$false
 
   # Create a scheduled job to create the cluster and AG
+  # Just for this session by bypass the execution policy to allow this Powershell script to run
   Register-ScheduledJob -Name Create-Availability-Group `
-    -ScriptBlock { C:\Scripts\create-availability-group.ps1 -Verbose *> 'C:\Scripts\create-availability-group.log' } `
+    -ScriptBlock { Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force; C:\Scripts\create-availability-group.ps1 -Verbose *> 'C:\Scripts\create-availability-group.log' } `
     -Credential $Cred -RunNow
 
 #  Register-ScheduledJob -Name Create-Availability-Group `

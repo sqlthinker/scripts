@@ -34,6 +34,9 @@
 # create-availability-group.ps1
 # Before running the script make you need to modify the file 
 # parameters-config.ps1 with the parameters specific to your configuration
+#
+# Note: May need to run this command if server blocks PowerShell scripts from running
+#   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 ##############################################################################
 
 $ErrorActionPreference = 'Stop'

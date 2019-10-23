@@ -394,11 +394,11 @@ Write-Host "IMPORTANT: You are now ready to run the script: create-sql-instance-
 # Remove firewall rules that allow current IP to RDP and WinRM
 # Uncomment if you don't want to keep those firewall rules
 <#
-if ( !( Get-GceFirewall | Where {$_.Name -eq "allow-winrm-current-ip"} ) ) {
+if ( ( Get-GceFirewall | Where {$_.Name -eq "allow-winrm-current-ip"} ) ) {
   Remove-GceFirewall -FirewallName "allow-winrm-current-ip"
 }
 
-if ( !( Get-GceFirewall | Where {$_.Name -eq "allow-rdp-current-ip"} ) ) {
+if ( ( Get-GceFirewall | Where {$_.Name -eq "allow-rdp-current-ip"} ) ) {
   Remove-GceFirewall -FirewallName "allow-rdp-current-ip"
 }
 #>
