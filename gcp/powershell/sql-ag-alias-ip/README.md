@@ -17,3 +17,4 @@ Below is a description of every script
      3. Creates a Windows AD domain with one domain controller
   * [create-sql-instance-availability-group-cleanup.ps1](create-sql-instance-availability-group-cleanup.ps1) - (Optional) Delete the SQL Server instances, the domain controller and the custom network. *WARNING: Use with caution. Used in cases where you are just testing the scripts*.
   * [create-sql-instance-availability-group.Tests.ps1](create-sql-instance-availability-group.Tests.ps1) - (Optional) Use Pester to unit test the scripts.
+  * [validate-availability-group.ps1](validate-availability-group.ps1) - (Optional) Validate that the Availability Group is working.
