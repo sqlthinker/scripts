@@ -326,9 +326,9 @@ Invoke-Command -Session $session1,$session2 -ScriptBlock {
   # Enable clustering
   Write-Host "$(Get-Date) $hostname - Enable clustering"
   Install-WindowsFeature Failover-Clustering -IncludeManagementTools | 
-    Format-Table
+    Format-Table | Out-String
 
-  # Add computer do domain
+  # Add computer to domain
   Write-Host "$(Get-Date) $hostname - Adding the server to the Domain: $domain"
   Add-Computer -DomainName $domain -Credential $cred -ComputerName $hostname -Restart -Force
 
@@ -375,7 +375,7 @@ while (!($creation_status)) {
       Select-String -Pattern 'Starting shutdown scripts' -Quiet
 }
 
-# Wait a minute to make sure all services have started
+# Wait 2 minutes to make sure all services have started
 Start-Sleep -s 120
 
 Write-Host "$(Get-Date) Ready now to create a Windows Failover Cluster (WSFC)"
@@ -391,20 +391,14 @@ Write-Host "$(Get-Date) Create a remote session to each server again"
 
 if ( (gwmi win32_computersystem).Domain.ToLower() -eq $domain.ToLower() ) {
   $fqdn1="$node1.$env:USERDNSDOMAIN".ToLower()
-#  $fqdn2="$node2.$env:USERDNSDOMAIN".ToLower()
 
   Write-Host "$(Get-Date) Creating remote session to $fqdn1"
   $session1 = New-PSSession -ComputerName $fqdn1 -UseSSL -SessionOption $session_options
-#  $session2 = New-PSSession -ComputerName $fqdn2 -UseSSL -SessionOption $session_options
 }
 else {
   Write-Host "$(Get-Date) Creating remote session to $node1 - $ip_address1"
   $session1 = New-PSSession -ComputerName $ip_address1 -UseSSL `
     -Credential $cred -SessionOption $session_options
-
-#  Write-Host "$(Get-Date) Creating remote session to $node2 - $ip_address2"
-#  $session2 = New-PSSession -ComputerName $ip_address2 -UseSSL `
-#    -Credential $credential2 -SessionOption $session_options
 }
 
 ##################################################################################
@@ -434,14 +428,10 @@ Invoke-Command -Session $session1 -ScriptBlock {
   Get-ScheduledJob  | Where Name -eq 'Create-Availability-Group' | Unregister-ScheduledJob  -Confirm:$false
 
   # Create a scheduled job to create the cluster and AG
-  # Just for this session by bypass the execution policy to allow this Powershell script to run
+  # Just for this session bypass the execution policy to allow this Powershell script to run
   Register-ScheduledJob -Name Create-Availability-Group `
     -ScriptBlock { Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force; C:\Scripts\create-availability-group.ps1 -Verbose *> 'C:\Scripts\create-availability-group.log' } `
     -Credential $Cred -RunNow
-
-#  Register-ScheduledJob -Name Create-Availability-Group `
-#    -FilePath "C:\Scripts\create-availability-group.ps1" `
-#    -Credential $Cred -RunNow -ArgumentList @{ Verbose=$true }
 
   # Wait 30 seconds before checking if the job is running
   Start-Sleep -s 30
@@ -496,8 +486,6 @@ Invoke-Command -Session $session1 -ScriptBlock {
 # Close the remote sessions
 Remove-PSSession $session1
 Remove-Variable session1
-#Remove-PSSession $session2
-#Remove-Variable session2
 
 Write-Host "$(Get-Date) End of create-sql-instance-availability-group.ps1"
 

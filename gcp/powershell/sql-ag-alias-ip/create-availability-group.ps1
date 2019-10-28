@@ -182,11 +182,11 @@ if (!( Get-Service -ComputerName $node1 -DisplayName 'Cluster Service' |
 
   # Enable clustering (just in case is  not already done)
   Install-WindowsFeature Failover-Clustering -IncludeManagementTools | 
-    Format-Table
+    Format-Table | Out-String
 
   # Create the cluster
   New-Cluster -Name $name_wsfc -Node $node1,$node2 -NoStorage `
-    -StaticAddress $ip_wsfc1,$ip_wsfc2 | Format-Table
+    -StaticAddress $ip_wsfc1,$ip_wsfc2 | Format-Table | Out-String
 
   # It is recommended to have a Witness in a 2-node cluster
   # We use a file share called "quorum" in the domain controller
@@ -360,12 +360,13 @@ if ( !($AG) ) {
 
 
   # Create the listener
+  # Notice we use /24 netmask. It should match the netmask of the IP address of the nodes.
   Write-Host "$(Get-Date) $hostname - Create Listener ($ip_ag_listener1, $ip_ag_listener2)"
   New-SqlAvailabilityGroupListener `
     -Name $name_ag_listener `
-    -StaticIp "$($ip_ag_listener1)/255.255.0.0","$($ip_ag_listener2)/255.255.0.0" `
+    -StaticIp "$($ip_ag_listener1)/255.255.255.0","$($ip_ag_listener2)/255.255.255.0" `
     -Path SQLSERVER:\SQL\$($node1)\DEFAULT\AvailabilityGroups\$($name_ag) | 
-      Format-Table
+      Format-Table | Out-String
 }
 else {
   Write-Host "$(Get-Date) $hostname - Skip creation of the Availability Group."
