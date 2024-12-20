@@ -1,0 +1,19 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--build-arg'
+      - 'HF_TOKEN=${_HUGGINGFACE_TOKEN}'
+      - '--build-arg'
+      - 'MODEL_ID=${_MODEL}'
+      - '--tag'
+      - '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/cloud-run-huggingface/${_IMAGE}:latest'
+      - '.'
+    automapSubstitutions: true
+images:
+  - '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/cloud-run-huggingface/${_IMAGE}:latest'
+substitutions:
+  _HUGGINGFACE_TOKEN: ''
+  _MODEL: ''
+  _IMAGE: ''
+  _LOCATION: ''
